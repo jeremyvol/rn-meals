@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Switch, Platform } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
+import { useDispatch } from 'react-redux';
 
 import COLORS from '../constants/colors';
 import HeaderButton from '../components/HeaderButton';
+
+import { setFilters } from '../store/actions/meals';
 
 const FilterSwitch = props => {
   return (
@@ -29,19 +32,63 @@ const FiltersScreen = props => {
   const [isVegan, setIsVegan] = useState(false);
   const [isVegetarian, setIsVegetarian] = useState(false);
 
-  const saveFilters = useCallback(() => {
+  const dispatch = useDispatch();
+
+  // const saveFilters = useCallback(() => {
+  //   const appliedFilters = {
+  //     glutenFree: isGlutenFree,
+  //     lactoseFree: isLactoseFree,
+  //     vegan: isVegan,
+  //     vegetarian: isVegetarian
+  //   };
+  //   dispatch( setFilters( appliedFilters ) );
+
+  //   //calling CategoriesScreen after saving the filters
+  //   navigation.navigate( 'Categories' );
+  // }, [isGlutenFree, isLactoseFree, isVegan, isVegetarian, dispatch]);
+
+  // useEffect(() => {
+  //   navigation.setParams({ save: saveFilters });
+  // }, [saveFilters]);
+
+  // alternative with no save button
+  const saveGluten = useCallback(
+    newValue => {
+      setIsGlutenFree(newValue);
+    },
+    [isGlutenFree, dispatch]
+  );
+
+  const saveLactose = useCallback(
+    newValue => {
+      setIsLactoseFree(newValue);
+    },
+    [isLactoseFree, dispatch]
+  );
+
+  const saveVegan = useCallback(
+    newValue => {
+      setIsVegan(newValue);
+    },
+    [isVegan, dispatch]
+  );
+
+  const saveVegetarian = useCallback(
+    newValue => {
+      setIsVegetarian(newValue);
+    },
+    [isVegetarian, dispatch]
+  );
+
+  useEffect(() => {
     const appliedFilters = {
       glutenFree: isGlutenFree,
       lactoseFree: isLactoseFree,
       vegan: isVegan,
       vegetarian: isVegetarian
     };
-    console.log(appliedFilters);
-  }, [isGlutenFree, isLactoseFree, isVegan, isVegetarian]);
-
-  useEffect(() => {
-    navigation.setParams({ save: saveFilters });
-  }, [saveFilters]);
+    dispatch(setFilters(appliedFilters));
+  }, [isGlutenFree, isLactoseFree, isVegan, isVegetarian, dispatch]);
 
   return (
     <View style={styles.screen}>
@@ -49,30 +96,34 @@ const FiltersScreen = props => {
       <FilterSwitch
         label="Gluten-free"
         state={isGlutenFree}
-        onChange={newValue => {
-          setIsGlutenFree(newValue);
-        }}
+        onChange={saveGluten}
+        // onChange={newValue => {
+        //   setIsGlutenFree(newValue);
+        // }}
       />
       <FilterSwitch
         label="Lactose-free"
         state={isLactoseFree}
-        onChange={newValue => {
-          setIsLactoseFree(newValue);
-        }}
+        onChange={saveLactose}
+        // onChange={newValue => {
+        //   setIsLactoseFree(newValue);
+        // }}
       />
       <FilterSwitch
         label="Vegan"
         state={isVegan}
-        onChange={newValue => {
-          setIsVegan(newValue);
-        }}
+        onChange={saveVegan}
+        // onChange={newValue => {
+        //   setIsVegan(newValue);
+        // }}
       />
       <FilterSwitch
         label="Vegetarian"
         state={isVegetarian}
-        onChange={newValue => {
-          setIsVegetarian(newValue);
-        }}
+        onChange={saveVegetarian}
+        // onChange={newValue => {
+        //   setIsVegetarian(newValue);
+        // }}
       />
     </View>
   );
@@ -91,16 +142,16 @@ FiltersScreen.navigationOptions = navData => {
           }}
         />
       </HeaderButtons>
-    ),
-    headerRight: (
-      <HeaderButtons HeaderButtonComponent={HeaderButton}>
-        <Item
-          title="Save"
-          iconName={Platform.OS === 'android' ? 'md-save' : 'ios-save'}
-          onPress={navData.navigation.getParam('save')}
-        />
-      </HeaderButtons>
     )
+    // headerRight: (
+    //   <HeaderButtons HeaderButtonComponent={HeaderButton}>
+    //     <Item
+    //       title="Save"
+    //       iconName={Platform.OS === 'android' ? 'md-save' : 'ios-save'}
+    //       onPress={navData.navigation.getParam('save')}
+    //     />
+    //   </HeaderButtons>
+    // )
   };
 };
 
